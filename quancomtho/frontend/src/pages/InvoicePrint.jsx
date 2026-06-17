@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Printer, Download, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import { buildApiUrl } from '../config';
 
 export default function InvoicePrint() {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function InvoicePrint() {
   useEffect(() => {
     const fetchInvoiceDetail = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/admin/invoices/${id}`);
+        const res = await fetch(buildApiUrl(`/admin/invoices/${id}`));
         const result = await res.json();
         if (result.success) {
           setData(result.data);

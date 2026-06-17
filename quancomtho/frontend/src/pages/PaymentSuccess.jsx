@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Check, Clock } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function PaymentSuccess() {
   const { maHD } = useParams();
@@ -16,7 +17,7 @@ export default function PaymentSuccess() {
 
   const fetchInvoice = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/invoices/${maHD}`);
+      const res = await fetch(buildApiUrl(`/admin/invoices/${maHD}`));
       const result = await res.json();
       if (result.success) {
         setInvoice(result.data.invoice);

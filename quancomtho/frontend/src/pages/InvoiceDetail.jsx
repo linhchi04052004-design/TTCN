@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Printer, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function InvoiceDetail() {
   const { id } = useParams();
@@ -16,7 +17,7 @@ export default function InvoiceDetail() {
 
   const fetchInvoiceDetail = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/invoices/${id}`);
+      const res = await fetch(buildApiUrl(`/admin/invoices/${id}`));
       const result = await res.json();
       if (result.success) {
         setData(result.data);

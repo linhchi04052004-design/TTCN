@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, RotateCcw, MoreVertical, X, AlertCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl, buildStorageUrl } from '../config';
 
 export default function SuspendedDishes() {
   const [dishes, setDishes] = useState([]);
@@ -25,7 +26,7 @@ export default function SuspendedDishes() {
       const queryParams = new URLSearchParams();
       if (search) queryParams.append('search', search);
 
-      const res = await fetch(`http://localhost:8000/api/admin/dishes/suspended/list?${queryParams.toString()}`);
+      const res = await fetch(buildApiUrl(`/admin/dishes/suspended/list?${queryParams.toString()}`));
       const result = await res.json();
       if (result.success) {
         setDishes(result.data);
@@ -63,7 +64,7 @@ export default function SuspendedDishes() {
   const confirmSingleRestore = async () => {
     if (!singleDishToRestore) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/dishes/${singleDishToRestore.MaMonAn}/restore`, {
+      const res = await fetch(buildApiUrl(`/admin/dishes/${singleDishToRestore.MaMonAn}/restore`), {
         method: 'PUT',
         headers: { 'Accept': 'application/json' }
       });
@@ -92,7 +93,7 @@ export default function SuspendedDishes() {
 
   const confirmBulkRestore = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/dishes/bulk-restore`, {
+      const res = await fetch(buildApiUrl('/admin/dishes/bulk-restore'), {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -209,7 +210,7 @@ export default function SuspendedDishes() {
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
                             {dish.HinhAnh ? (
-                              <img src={`http://localhost:8000${dish.HinhAnh}`} alt={dish.TenMonAn} className="w-full h-full object-cover" />
+                              <img src={buildStorageUrl(dish.HinhAnh)} alt={dish.TenMonAn} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">N/A</div>
                             )}
@@ -269,7 +270,7 @@ export default function SuspendedDishes() {
                 <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl mb-8 w-full max-w-xs justify-center text-left">
                   <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-gray-200">
                     {singleDishToRestore.HinhAnh ? (
-                      <img src={`http://localhost:8000${singleDishToRestore.HinhAnh}`} className="w-full h-full object-cover" />
+                      <img src={buildStorageUrl(singleDishToRestore.HinhAnh)} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gray-200" />
                     )}

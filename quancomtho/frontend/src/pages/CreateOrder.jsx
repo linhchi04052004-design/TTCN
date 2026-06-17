@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Search, Plus, Minus, Trash2, ArrowLeft, CheckCircle, AlertCircle, Clock, Utensils } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl, buildStorageUrl } from '../config';
 
 export default function CreateOrder() {
   const { maBan } = useParams();
@@ -29,8 +30,8 @@ export default function CreateOrder() {
     setLoading(true);
     try {
       const [catsRes, dishesRes] = await Promise.all([
-        fetch('http://localhost:8000/api/admin/categories'),
-        fetch('http://localhost:8000/api/admin/dishes?status=' + encodeURIComponent('Đang bán'))
+        fetch(buildApiUrl('/admin/categories')),
+        fetch(buildApiUrl('/admin/dishes?status=' + encodeURIComponent('Đang bán')))
       ]);
 
       const catsResult = await catsRes.json();
@@ -113,7 +114,7 @@ export default function CreateOrder() {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/api/admin/orders/full', {
+      const res = await fetch(buildApiUrl('/admin/orders/full'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload)
@@ -237,7 +238,7 @@ export default function CreateOrder() {
                     <div className="h-32 bg-gray-100 w-full relative">
                       {dish.HinhAnh ? (
                         <img
-                          src={`http://localhost:8000${dish.HinhAnh}`}
+                          src={buildStorageUrl(dish.HinhAnh)}
                           alt={dish.TenMonAn}
                           className="w-full h-full object-cover"
                           onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}

@@ -8,6 +8,7 @@ import {
 import { Clock, Wallet, DollarSign, Layers, Utensils, Armchair, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
@@ -22,7 +23,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     // In real app, we might need auth token here
-    fetch('http://localhost:8000/api/admin/dashboard', {
+    fetch(buildApiUrl('/admin/dashboard'), {
       headers: {
         'Accept': 'application/json'
       }

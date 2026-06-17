@@ -3,6 +3,7 @@ import { QrCode, Users, Armchair, LayoutGrid, Clock, Printer, X, Link as LinkIco
 import { format } from 'date-fns';
 import { QRCodeSVG } from 'qrcode.react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function Tables() {
   const [tables, setTables] = useState([]);
@@ -29,7 +30,7 @@ export default function Tables() {
   const fetchTables = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/api/admin/tables`);
+      const res = await fetch(buildApiUrl('/admin/tables'));
       const result = await res.json();
       if (result.success) {
         setTables(result.data.tables);
@@ -51,7 +52,7 @@ export default function Tables() {
 
   const handleSaveCapacity = async (maBan, newCapacity) => {
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/api/admin/tables/${maBan}/capacity`, {
+      const res = await fetch(buildApiUrl(`/admin/tables/${maBan}/capacity`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

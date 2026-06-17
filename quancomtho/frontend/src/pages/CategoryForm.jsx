@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function CategoryForm() {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export default function CategoryForm() {
 
   const fetchCategory = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/categories/${id}`);
+      const res = await fetch(buildApiUrl(`/admin/categories/${id}`));
       const result = await res.json();
       if (result.success) {
         setFormData({
@@ -56,8 +57,8 @@ export default function CategoryForm() {
     setLoading(true);
     try {
       const url = isEditMode 
-        ? `http://localhost:8000/api/admin/categories/${id}`
-        : 'http://localhost:8000/api/admin/categories';
+        ? buildApiUrl(`/admin/categories/${id}`)
+        : buildApiUrl('/admin/categories');
       const method = isEditMode ? 'PUT' : 'POST';
 
       const res = await fetch(url, {

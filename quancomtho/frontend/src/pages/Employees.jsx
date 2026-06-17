@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Trash2, User, UserPlus, X, AlertCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function Employees() {
   const [employees, setEmployees] = useState([]);
@@ -28,7 +29,7 @@ export default function Employees() {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/admin/employees');
+      const res = await fetch(buildApiUrl('/admin/employees'));
       const result = await res.json();
       if (result.success) {
         setEmployees(result.data);
@@ -54,7 +55,7 @@ export default function Employees() {
     }
 
     try {
-      const res = await fetch('http://localhost:8000/api/admin/employees', {
+      const res = await fetch(buildApiUrl('/admin/employees'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export default function Employees() {
     if (!employeeToDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/employees/${employeeToDelete.MaTK}`, {
+      const res = await fetch(buildApiUrl(`/admin/employees/${employeeToDelete.MaTK}`), {
         method: 'DELETE',
         headers: { 'Accept': 'application/json' }
       });

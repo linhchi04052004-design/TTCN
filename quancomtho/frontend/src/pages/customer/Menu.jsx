@@ -4,8 +4,7 @@ import { ShoppingCart, ArrowLeft, Plus, Loader2 } from 'lucide-react';
 import { fetchCategories, fetchDishes } from '../../services/customerApi';
 import DishDetail from '../../components/customer/DishDetail';
 import Cart from '../../components/customer/Cart';
-
-const BASE_IMAGE_URL = `http://${window.location.hostname}:8000`;
+import { buildStorageUrl } from '../../config';
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -50,7 +49,7 @@ const Menu = () => {
   const getDishImage = (dish) => {
     if (!dish.HinhAnh) return 'https://images.unsplash.com/photo-1618449840665-9ed506d73a34?w=600&auto=format&fit=crop&q=80';
     if (dish.HinhAnh.startsWith('http')) return dish.HinhAnh;
-    return `${BASE_IMAGE_URL}${dish.HinhAnh}`;
+    return buildStorageUrl(dish.HinhAnh);
   };
 
   const showToast = (message) => {

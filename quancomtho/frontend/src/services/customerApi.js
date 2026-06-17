@@ -1,4 +1,6 @@
-const BASE_URL = `http://${window.location.hostname}:8000/api/customer`;
+import { buildApiUrl } from '../config';
+
+const BASE_URL = buildApiUrl('/customer');
 
 /**
  * Lấy danh sách danh mục đang hoạt động

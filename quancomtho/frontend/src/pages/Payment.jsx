@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function Payment() {
   const { maDH } = useParams();
@@ -26,8 +27,8 @@ export default function Payment() {
     setLoading(true);
     try {
       const [orderRes, allOrdersRes] = await Promise.all([
-        fetch(`http://localhost:8000/api/admin/orders/${maDH}`),
-        fetch('http://localhost:8000/api/admin/orders')
+        fetch(buildApiUrl(`/admin/orders/${maDH}`)),
+        fetch(buildApiUrl('/admin/orders'))
       ]);
       const orderData = await orderRes.json();
       const allOrdersData = await allOrdersRes.json();
@@ -97,7 +98,7 @@ export default function Payment() {
     };
 
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/api/admin/payment/process`, {
+      const res = await fetch(buildApiUrl('/admin/payment/process'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload)

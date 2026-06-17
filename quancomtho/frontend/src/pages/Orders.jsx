@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ShoppingBag, ChevronDown, CheckCircle, XCircle, Clock, Utensils, AlertCircle, X, Eye } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import CancelOrderPopup from '../components/CancelOrderPopup';
+import { buildApiUrl } from '../config';
 
 export default function Orders() {
   const [tables, setTables] = useState([]);
@@ -28,8 +29,8 @@ export default function Orders() {
     setLoading(true);
     try {
       const [tablesRes, ordersRes] = await Promise.all([
-        fetch('http://localhost:8000/api/admin/tables'),
-        fetch('http://localhost:8000/api/admin/orders')
+        fetch(buildApiUrl('/admin/tables')),
+        fetch(buildApiUrl('/admin/orders'))
       ]);
 
       const tablesResult = await tablesRes.json();
@@ -61,7 +62,7 @@ export default function Orders() {
     setTableModal({ table, orders: [] });
     setTableModalLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/orders?maBan=${table.MaBan}`);
+      const res = await fetch(buildApiUrl(`/admin/orders?maBan=${table.MaBan}`));
       const result = await res.json();
       if (result.success) {
         // Filter orders for this table
@@ -85,7 +86,7 @@ export default function Orders() {
 
   const executeCancelOrder = async (maDH) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/orders/${maDH}/cancel`, {
+      const res = await fetch(buildApiUrl(`/admin/orders/${maDH}/cancel`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
       });

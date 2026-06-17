@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Plus, Edit2, Trash2, X, AlertCircle, AlertTriangle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
@@ -28,7 +29,7 @@ export default function Categories() {
       if (search) queryParams.append('search', search);
       if (statusFilter !== 'Tất cả') queryParams.append('status', statusFilter);
 
-      const res = await fetch(`http://localhost:8000/api/admin/categories?${queryParams.toString()}`);
+      const res = await fetch(buildApiUrl(`/admin/categories?${queryParams.toString()}`));
       const result = await res.json();
       if (result.success) {
         setCategories(result.data);
@@ -53,7 +54,7 @@ export default function Categories() {
     const maDM = categoryToDelete.MaDanhMuc;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/categories/${maDM}`, {
+      const res = await fetch(buildApiUrl(`/admin/categories/${maDM}`), {
         method: 'DELETE',
         headers: { 'Accept': 'application/json' }
       });

@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ArrowLeft, CheckCircle, AlertCircle, Clock, Utensils, ShoppingBag, User, Phone, Hash, Calendar, CreditCard, XCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import CancelOrderPopup from '../components/CancelOrderPopup';
+import { buildApiUrl } from '../config';
 
 export default function OrderDetail() {
   const { maDH } = useParams();
@@ -25,7 +26,7 @@ export default function OrderDetail() {
   const fetchOrder = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/orders/${maDH}`);
+      const res = await fetch(buildApiUrl(`/admin/orders/${maDH}`));
       const result = await res.json();
       if (result.success) {
         setOrder(result.data);
@@ -49,7 +50,7 @@ export default function OrderDetail() {
 
   const executeCancel = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/orders/${maDH}/cancel`, {
+      const res = await fetch(buildApiUrl(`/admin/orders/${maDH}/cancel`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
       });

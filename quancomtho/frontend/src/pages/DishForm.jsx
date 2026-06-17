@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { ChevronLeft, Image as ImageIcon, X } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl, buildStorageUrl } from '../config';
 
 export default function DishForm() {
   const { id } = useParams();
@@ -35,7 +36,7 @@ export default function DishForm() {
   const fetchCategories = async () => {
     try {
       // Gọi API danh mục hiện có
-      const res = await fetch('http://localhost:8000/api/admin/categories?status=Đang bán');
+      const res = await fetch(buildApiUrl('/admin/categories?status=Đang bán'));
       const result = await res.json();
       if (result.success) {
         setCategories(result.data);
@@ -47,7 +48,7 @@ export default function DishForm() {
 
   const fetchDish = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/dishes/${id}`);
+      const res = await fetch(buildApiUrl(`/admin/dishes/${id}`));
       const result = await res.json();
       if (result.success) {
         const dish = result.data;
@@ -59,7 +60,7 @@ export default function DishForm() {
           DonGia: Math.round(dish.DonGia) // Bỏ phần thập phân .00
         });
         if (dish.HinhAnh) {
-          setImagePreview(`http://localhost:8000${dish.HinhAnh}`);
+          setImagePreview(buildStorageUrl(dish.HinhAnh));
         }
       } else {
         setError({ general: 'Không thể tải dữ liệu món ăn.' });
@@ -117,8 +118,8 @@ export default function DishForm() {
     setLoading(true);
     try {
       const url = isEditMode 
-        ? `http://localhost:8000/api/admin/dishes/${id}`
-        : 'http://localhost:8000/api/admin/dishes';
+        ? buildApiUrl(`/admin/dishes/${id}`)
+        : buildApiUrl('/admin/dishes');
       
       // Sử dụng FormData để gửi file
       const submitData = new FormData();

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Clock, Wallet, FileText, TrendingUp, Search, Eye, Printer, Filter } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl } from '../config';
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -44,7 +45,7 @@ export default function Invoices() {
       if (toDate) queryParams.append('to_date', toDate);
       if (paymentMethod !== 'Tất cả') queryParams.append('payment_method', paymentMethod);
 
-      const res = await fetch(`http://localhost:8000/api/admin/invoices?${queryParams.toString()}`);
+      const res = await fetch(buildApiUrl(`/admin/invoices?${queryParams.toString()}`));
       const result = await res.json();
       if (result.success) {
         setInvoices(result.data.invoices);

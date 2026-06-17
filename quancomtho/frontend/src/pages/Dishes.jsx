@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import { buildApiUrl, buildStorageUrl } from '../config';
 
 export default function Dishes() {
   const [dishes, setDishes] = useState([]);
@@ -27,7 +28,7 @@ export default function Dishes() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/categories');
+      const res = await fetch(buildApiUrl('/admin/categories'));
       const result = await res.json();
       if (result.success) {
         setCategories(result.data);
@@ -45,7 +46,7 @@ export default function Dishes() {
       if (statusFilter !== 'Tất cả trạng thái') queryParams.append('status', statusFilter);
       if (categoryFilter) queryParams.append('category', categoryFilter);
 
-      const res = await fetch(`http://localhost:8000/api/admin/dishes?${queryParams.toString()}`);
+      const res = await fetch(buildApiUrl(`/admin/dishes?${queryParams.toString()}`));
       const result = await res.json();
       if (result.success) {
         setDishes(result.data);
@@ -69,7 +70,7 @@ export default function Dishes() {
     if (!dishToDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/dishes/${dishToDelete.MaMonAn}`, {
+      const res = await fetch(buildApiUrl(`/admin/dishes/${dishToDelete.MaMonAn}`), {
         method: 'DELETE',
         headers: { 'Accept': 'application/json' }
       });
@@ -193,7 +194,7 @@ export default function Dishes() {
                   <div className={`relative aspect-square bg-gray-100 ${isSuspended ? 'grayscale' : ''}`}>
                     {dish.HinhAnh ? (
                       <img 
-                        src={`http://localhost:8000${dish.HinhAnh}`} 
+                        src={buildStorageUrl(dish.HinhAnh)} 
                         alt={dish.TenMonAn} 
                         className="w-full h-full object-cover"
                       />
@@ -275,7 +276,7 @@ export default function Dishes() {
                 <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl mb-8 w-full max-w-xs justify-center text-left">
                   <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 border border-gray-200">
                     {dishToDelete.HinhAnh ? (
-                      <img src={`http://localhost:8000${dishToDelete.HinhAnh}`} className="w-full h-full object-cover" />
+                      <img src={buildStorageUrl(dishToDelete.HinhAnh)} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gray-200" />
                     )}
