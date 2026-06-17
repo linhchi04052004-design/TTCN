@@ -63,6 +63,7 @@ const Checkout = () => {
       };
       const res = await placeOrder(orderData);
       if (res.success) {
+        localStorage.setItem('active_order_id', res.data?.MaDH); 
         setOrderId(res.data?.MaDH);
         setShowSuccess(true);
       } else {
@@ -76,6 +77,7 @@ const Checkout = () => {
   };
 
   const handleBackToMenu = () => {
+    localStorage.removeItem('active_order_id');
     navigate(currentMaBan ? `/order/${currentMaBan}/menu` : '/order/menu');
   };
 
