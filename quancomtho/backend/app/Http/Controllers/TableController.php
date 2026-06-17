@@ -13,7 +13,7 @@ class TableController extends Controller
      */
     public function index()
     {
-        $tables = DB::table('ban_an')->orderBy('MaBan', 'asc')->get();
+        $tables = DB::table('BAN_AN')->orderBy('MaBan', 'asc')->get();
 
         $totalTables = $tables->count();
         $emptyTables = $tables->where('TrangThai', 'Trống')->count();
@@ -54,7 +54,7 @@ class TableController extends Controller
             ], 422);
         }
 
-        $table = DB::table('ban_an')->where('MaBan', $maBan)->first();
+        $table = DB::table('BAN_AN')->where('MaBan', $maBan)->first();
 
         if (!$table) {
             return response()->json([
@@ -63,7 +63,7 @@ class TableController extends Controller
             ], 404);
         }
 
-        DB::table('ban_an')->where('MaBan', $maBan)->update([
+        DB::table('BAN_AN')->where('MaBan', $maBan)->update([
             'SucChua' => $request->input('SucChua')
         ]);
 

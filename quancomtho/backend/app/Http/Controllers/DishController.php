@@ -14,23 +14,23 @@ class DishController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DB::table('mon_an')
-            ->leftJoin('danh_muc_mon', 'mon_an.MaDanhMuc', '=', 'danh_muc_mon.MaDanhMuc')
-            ->select('mon_an.*', 'danh_muc_mon.TenDanhMuc');
+        $query = DB::table('MON_AN')
+            ->leftJoin('DANH_MUC_MON', 'MON_AN.MaDanhMuc', '=', 'DANH_MUC_MON.MaDanhMuc')
+            ->select('MON_AN.*', 'DANH_MUC_MON.TenDanhMuc');
 
         if ($request->has('search') && !empty($request->search)) {
-            $query->where('mon_an.TenMonAn', 'like', '%' . $request->search . '%');
+            $query->where('MON_AN.TenMonAn', 'like', '%' . $request->search . '%');
         }
 
         if ($request->has('status') && $request->status !== 'Tất cả trạng thái' && !empty($request->status)) {
-            $query->where('mon_an.TrangThai', $request->status);
+            $query->where('MON_AN.TrangThai', $request->status);
         }
 
         if ($request->has('category') && !empty($request->category)) {
-            $query->where('mon_an.MaDanhMuc', $request->category);
+            $query->where('MON_AN.MaDanhMuc', $request->category);
         }
 
-        $dishes = $query->orderBy('mon_an.MaMonAn', 'asc')->get();
+        $dishes = $query->orderBy('MON_AN.MaMonAn', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -43,7 +43,7 @@ class DishController extends Controller
      */
     public function show($id)
     {
-        $dish = DB::table('mon_an')->where('MaMonAn', $id)->first();
+        $dish = DB::table('MON_AN')->where('MaMonAn', $id)->first();
 
         if (!$dish) {
             return response()->json([
@@ -65,7 +65,7 @@ class DishController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'TenMonAn' => 'required|string|max:50',
-            'MaDanhMuc' => 'required|string|exists:danh_muc_mon,MaDanhMuc',
+            'MaDanhMuc' => 'required|string|exists:DANH_MUC_MON,MaDanhMuc',
             'TrangThai' => 'required|string|in:Đang bán,Ngưng bán',
             'DonGia' => 'required|numeric|min:0',
             'MoTa' => 'nullable|string|max:255',
@@ -90,7 +90,7 @@ class DishController extends Controller
 
         try {
             // Sinh mã món tự động (VD: MA001 -> MA002)
-            $lastDish = DB::table('mon_an')
+            $lastDish = DB::table('MON_AN')
                 ->orderByRaw('LENGTH(MaMonAn) DESC')
                 ->orderBy('MaMonAn', 'desc')
                 ->first();
@@ -114,7 +114,7 @@ class DishController extends Controller
                 $hinhAnhPath = '/images/dishes/' . $filename;
             }
 
-            DB::table('mon_an')->insert([
+            DB::table('MON_AN')->insert([
                 'MaMonAn' => $nextMaMon,
                 'MaDanhMuc' => $request->MaDanhMuc,
                 'TenMonAn' => $request->TenMonAn,
@@ -145,7 +145,7 @@ class DishController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'TenMonAn' => 'required|string|max:50',
-            'MaDanhMuc' => 'required|string|exists:danh_muc_mon,MaDanhMuc',
+            'MaDanhMuc' => 'required|string|exists:DANH_MUC_MON,MaDanhMuc',
             'TrangThai' => 'required|string|in:Đang bán,Ngưng bán',
             'DonGia' => 'required|numeric|min:0',
             'MoTa' => 'nullable|string|max:255',
@@ -167,7 +167,7 @@ class DishController extends Controller
         }
 
         try {
-            $dish = DB::table('mon_an')->where('MaMonAn', $id)->first();
+            $dish = DB::table('MON_AN')->where('MaMonAn', $id)->first();
             if (!$dish) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy món ăn'], 404);
             }
@@ -204,7 +204,7 @@ class DishController extends Controller
                 }
             }
 
-            DB::table('mon_an')->where('MaMonAn', $id)->update($updateData);
+            DB::table('MON_AN')->where('MaMonAn', $id)->update($updateData);
 
             return response()->json([
                 'success' => true,
@@ -224,13 +224,13 @@ class DishController extends Controller
     public function destroy($id)
     {
         try {
-            $dish = DB::table('mon_an')->where('MaMonAn', $id)->first();
+            $dish = DB::table('MON_AN')->where('MaMonAn', $id)->first();
             if (!$dish) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy món ăn'], 404);
             }
 
             // Theo yêu cầu: Xóa sẽ chuyển sang Ngưng bán chứ không xóa thật
-            DB::table('mon_an')->where('MaMonAn', $id)->update([
+            DB::table('MON_AN')->where('MaMonAn', $id)->update([
                 'TrangThai' => 'Ngưng bán'
             ]);
 
@@ -251,20 +251,20 @@ class DishController extends Controller
      */
     public function getSuspended(Request $request)
     {
-        $query = DB::table('mon_an')
-            ->leftJoin('danh_muc_mon', 'mon_an.MaDanhMuc', '=', 'danh_muc_mon.MaDanhMuc')
-            ->where('mon_an.TrangThai', 'Ngưng bán')
-            ->select('mon_an.*', 'danh_muc_mon.TenDanhMuc');
+            $query = DB::table('MON_AN')
+            ->leftJoin('DANH_MUC_MON', 'MON_AN.MaDanhMuc', '=', 'DANH_MUC_MON.MaDanhMuc')
+            ->where('MON_AN.TrangThai', 'Ngưng bán')
+            ->select('MON_AN.*', 'DANH_MUC_MON.TenDanhMuc');
 
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('mon_an.TenMonAn', 'like', '%' . $search . '%')
-                  ->orWhere('danh_muc_mon.TenDanhMuc', 'like', '%' . $search . '%');
+                                $q->where('MON_AN.TenMonAn', 'like', '%' . $search . '%')
+                                    ->orWhere('DANH_MUC_MON.TenDanhMuc', 'like', '%' . $search . '%');
             });
         }
 
-        $dishes = $query->orderBy('mon_an.MaMonAn', 'asc')->get();
+        $dishes = $query->orderBy('MON_AN.MaMonAn', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -278,12 +278,12 @@ class DishController extends Controller
     public function restore($id)
     {
         try {
-            $dish = DB::table('mon_an')->where('MaMonAn', $id)->first();
+            $dish = DB::table('MON_AN')->where('MaMonAn', $id)->first();
             if (!$dish) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy món ăn'], 404);
             }
 
-            DB::table('mon_an')->where('MaMonAn', $id)->update([
+            DB::table('MON_AN')->where('MaMonAn', $id)->update([
                 'TrangThai' => 'Đang bán'
             ]);
 
@@ -306,7 +306,7 @@ class DishController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'ids' => 'required|array',
-            'ids.*' => 'string|exists:mon_an,MaMonAn'
+            'ids.*' => 'string|exists:MON_AN,MaMonAn'
         ]);
 
         if ($validator->fails()) {
@@ -317,7 +317,7 @@ class DishController extends Controller
         }
 
         try {
-            DB::table('mon_an')
+            DB::table('MON_AN')
                 ->whereIn('MaMonAn', $request->ids)
                 ->update(['TrangThai' => 'Đang bán']);
 

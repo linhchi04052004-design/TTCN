@@ -17,7 +17,7 @@ class CustomerController extends Controller
      */
     public function getCategories()
     {
-        $categories = DB::table('danh_muc_mon')
+        $categories = DB::table('DANH_MUC_MON')
             ->where('TrangThai', 'Đang bán')
             ->orderBy('MaDanhMuc', 'asc')
             ->get();
@@ -33,16 +33,16 @@ class CustomerController extends Controller
      */
     public function getDishes(Request $request)
     {
-        $query = DB::table('mon_an')
-            ->leftJoin('danh_muc_mon', 'mon_an.MaDanhMuc', '=', 'danh_muc_mon.MaDanhMuc')
-            ->where('mon_an.TrangThai', 'Đang bán')
-            ->select('mon_an.*', 'danh_muc_mon.TenDanhMuc');
+        $query = DB::table('MON_AN')
+            ->leftJoin('DANH_MUC_MON', 'MON_AN.MaDanhMuc', '=', 'DANH_MUC_MON.MaDanhMuc')
+            ->where('MON_AN.TrangThai', 'Đang bán')
+            ->select('MON_AN.*', 'DANH_MUC_MON.TenDanhMuc');
 
         if ($request->has('maDanhMuc') && !empty($request->maDanhMuc)) {
-            $query->where('mon_an.MaDanhMuc', $request->maDanhMuc);
+            $query->where('MON_AN.MaDanhMuc', $request->maDanhMuc);
         }
 
-        $dishes = $query->orderBy('mon_an.MaDanhMuc', 'asc')->orderBy('mon_an.MaMonAn', 'asc')->get();
+        $dishes = $query->orderBy('MON_AN.MaDanhMuc', 'asc')->orderBy('MON_AN.MaMonAn', 'asc')->get();
 
         return response()->json([
             'success' => true,
@@ -102,9 +102,9 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'TenKhach'      => 'required|string|max:100',
             'SDT'           => 'nullable|string|max:15',
-            'MaBan'         => 'required|string|exists:ban_an,MaBan',
+            'MaBan'         => 'required|string|exists:BAN_AN,MaBan',
             'items'         => 'required|array|min:1',
-            'items.*.MaMonAn' => 'required|string|exists:mon_an,MaMonAn',
+            'items.*.MaMonAn' => 'required|string|exists:MON_AN,MaMonAn',
             'items.*.SoLuong' => 'required|integer|min:1',
             'items.*.GhiChu'  => 'nullable|string|max:255',
         ], [
@@ -132,7 +132,7 @@ class CustomerController extends Controller
             $maDH = $this->generateOrderCode();
 
             // Dùng NV001 làm mặc định (đặt qua QR, không cần nhân viên chọn)
-            $maNV = DB::table('nhan_vien')->orderBy('MaNV', 'asc')->value('MaNV') ?? 'NV001';
+            $maNV = DB::table('NHAN_VIEN')->orderBy('MaNV', 'asc')->value('MaNV') ?? 'NV001';
 
             $order = DonHang::create([
                 'MaDH'      => $maDH,

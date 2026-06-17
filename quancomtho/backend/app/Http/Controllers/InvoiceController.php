@@ -12,7 +12,7 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DB::table('hoa_don')
+        $query = DB::table('HOA_DON')
             ->select('MaHD', 'NgayThanhToan', 'ThanhTien', 'PTTT')
             ->orderBy('NgayThanhToan', 'desc');
 
@@ -56,18 +56,18 @@ class InvoiceController extends Controller
     public function show($id)
     {
         // Lấy thông tin hóa đơn và đơn hàng tương ứng
-        $invoice = DB::table('hoa_don')
-            ->join('don_hang', 'hoa_don.MaDH', '=', 'don_hang.MaDH')
-            ->where('hoa_don.MaHD', $id)
+        $invoice = DB::table('HOA_DON')
+            ->join('DON_HANG', 'HOA_DON.MaDH', '=', 'DON_HANG.MaDH')
+            ->where('HOA_DON.MaHD', $id)
             ->select(
-                'hoa_don.MaHD', 
-                'hoa_don.MaDH', 
-                'hoa_don.NgayThanhToan', 
-                'hoa_don.ThanhTien', 
-                'hoa_don.PTTT',
-                'don_hang.TenKhach',
-                'don_hang.SDT',
-                'don_hang.HinhThuc'
+                'HOA_DON.MaHD', 
+                'HOA_DON.MaDH', 
+                'HOA_DON.NgayThanhToan', 
+                'HOA_DON.ThanhTien', 
+                'HOA_DON.PTTT',
+                'DON_HANG.TenKhach',
+                'DON_HANG.SDT',
+                'DON_HANG.HinhThuc'
             )
             ->first();
 
@@ -79,14 +79,14 @@ class InvoiceController extends Controller
         }
 
         // Lấy danh sách chi tiết món ăn trong đơn hàng này
-        $lineItems = DB::table('chi_tiet_dh')
-            ->join('mon_an', 'chi_tiet_dh.MaMonAn', '=', 'mon_an.MaMonAn')
-            ->where('chi_tiet_dh.MaDH', $invoice->MaDH)
+        $lineItems = DB::table('CHI_TIET_DH')
+            ->join('MON_AN', 'CHI_TIET_DH.MaMonAn', '=', 'MON_AN.MaMonAn')
+            ->where('CHI_TIET_DH.MaDH', $invoice->MaDH)
             ->select(
-                'mon_an.TenMonAn',
-                'chi_tiet_dh.SoLuong',
-                'chi_tiet_dh.DonGiaTaiThoiDiemBan as DonGia',
-                'chi_tiet_dh.TongTien'
+                'MON_AN.TenMonAn',
+                'CHI_TIET_DH.SoLuong',
+                'CHI_TIET_DH.DonGiaTaiThoiDiemBan as DonGia',
+                'CHI_TIET_DH.TongTien'
             )
             ->get();
 

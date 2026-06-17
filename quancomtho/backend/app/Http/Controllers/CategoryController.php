@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DB::table('danh_muc_mon');
+        $query = DB::table('DANH_MUC_MON');
 
         if ($request->has('search') && !empty($request->search)) {
             $query->where('TenDanhMuc', 'like', '%' . $request->search . '%');
@@ -36,7 +36,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category = DB::table('danh_muc_mon')->where('MaDanhMuc', $id)->first();
+        $category = DB::table('DANH_MUC_MON')->where('MaDanhMuc', $id)->first();
 
         if (!$category) {
             return response()->json([
@@ -57,7 +57,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'TenDanhMuc' => 'required|string|max:50|unique:danh_muc_mon,TenDanhMuc',
+            'TenDanhMuc' => 'required|string|max:50|unique:DANH_MUC_MON,TenDanhMuc',
             'TrangThai' => 'required|string|in:Đang bán,Ngưng bán'
         ], [
             'TenDanhMuc.required' => 'Tên danh mục không được để trống.',
@@ -74,7 +74,7 @@ class CategoryController extends Controller
 
         try {
             // Sinh mã danh mục tự động (VD: DM001 -> DM002)
-            $lastCategory = DB::table('danh_muc_mon')
+            $lastCategory = DB::table('DANH_MUC_MON')
                 ->orderByRaw('LENGTH(MaDanhMuc) DESC')
                 ->orderBy('MaDanhMuc', 'desc')
                 ->first();
@@ -85,7 +85,7 @@ class CategoryController extends Controller
                 $nextMaDM = 'DM' . str_pad($lastIdNum + 1, 3, '0', STR_PAD_LEFT);
             }
 
-            DB::table('danh_muc_mon')->insert([
+            DB::table('DANH_MUC_MON')->insert([
                 'MaDanhMuc' => $nextMaDM,
                 'TenDanhMuc' => $request->TenDanhMuc,
                 'TrangThai' => $request->TrangThai
@@ -109,7 +109,7 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'TenDanhMuc' => 'required|string|max:50|unique:danh_muc_mon,TenDanhMuc,' . $id . ',MaDanhMuc',
+            'TenDanhMuc' => 'required|string|max:50|unique:DANH_MUC_MON,TenDanhMuc,' . $id . ',MaDanhMuc',
             'TrangThai' => 'required|string|in:Đang bán,Ngưng bán'
         ], [
             'TenDanhMuc.required' => 'Tên danh mục không được để trống.',
@@ -125,12 +125,12 @@ class CategoryController extends Controller
         }
 
         try {
-            $category = DB::table('danh_muc_mon')->where('MaDanhMuc', $id)->first();
+            $category = DB::table('DANH_MUC_MON')->where('MaDanhMuc', $id)->first();
             if (!$category) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy danh mục'], 404);
             }
 
-            DB::table('danh_muc_mon')->where('MaDanhMuc', $id)->update([
+            DB::table('DANH_MUC_MON')->where('MaDanhMuc', $id)->update([
                 'TenDanhMuc' => $request->TenDanhMuc,
                 'TrangThai' => $request->TrangThai
             ]);
@@ -153,13 +153,13 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         try {
-            $category = DB::table('danh_muc_mon')->where('MaDanhMuc', $id)->first();
+            $category = DB::table('DANH_MUC_MON')->where('MaDanhMuc', $id)->first();
             if (!$category) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy danh mục'], 404);
             }
 
             // Kiểm tra xem danh mục có chứa món ăn không
-            $hasItems = DB::table('mon_an')->where('MaDanhMuc', $id)->exists();
+            $hasItems = DB::table('MON_AN')->where('MaDanhMuc', $id)->exists();
             if ($hasItems) {
                 return response()->json([
                     'success' => false,
@@ -168,7 +168,7 @@ class CategoryController extends Controller
             }
 
             // Xóa danh mục
-            DB::table('danh_muc_mon')->where('MaDanhMuc', $id)->delete();
+            DB::table('DANH_MUC_MON')->where('MaDanhMuc', $id)->delete();
 
             return response()->json([
                 'success' => true,

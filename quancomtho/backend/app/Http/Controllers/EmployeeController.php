@@ -14,19 +14,19 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $accounts = DB::table('tai_khoan')
-            ->join('nhan_vien', 'tai_khoan.MaNV', '=', 'nhan_vien.MaNV')
+        $accounts = DB::table('TAI_KHOAN')
+            ->join('NHAN_VIEN', 'TAI_KHOAN.MaNV', '=', 'NHAN_VIEN.MaNV')
             ->select(
-                'tai_khoan.MaTK',
-                'tai_khoan.TenDangNhap',
-                'tai_khoan.VaiTro',
-                'tai_khoan.TrangThai',
-                'nhan_vien.MaNV',
-                'nhan_vien.TenNV',
-                'nhan_vien.SDT',
-                'nhan_vien.Email'
+                'TAI_KHOAN.MaTK',
+                'TAI_KHOAN.TenDangNhap',
+                'TAI_KHOAN.VaiTro',
+                'TAI_KHOAN.TrangThai',
+                'NHAN_VIEN.MaNV',
+                'NHAN_VIEN.TenNV',
+                'NHAN_VIEN.SDT',
+                'NHAN_VIEN.Email'
             )
-            ->orderBy('tai_khoan.MaTK', 'asc')
+            ->orderBy('TAI_KHOAN.MaTK', 'asc')
             ->get();
 
         return response()->json([
@@ -42,8 +42,8 @@ class EmployeeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'TenNV' => 'required|string|max:50',
-            'SDT' => 'required|string|max:15|unique:nhan_vien,SDT',
-            'Email' => 'nullable|email|max:50|unique:nhan_vien,Email',
+            'SDT' => 'required|string|max:15|unique:NHAN_VIEN,SDT',
+            'Email' => 'nullable|email|max:50|unique:NHAN_VIEN,Email',
             'VaiTro' => 'required|string|max:20'
         ]);
 
@@ -58,7 +58,7 @@ class EmployeeController extends Controller
             DB::beginTransaction();
 
             // 1. Tự động sinh MaNV (VD: NV001 -> NV002)
-            $lastNhanVien = DB::table('nhan_vien')->orderByRaw('LENGTH(MaNV) DESC')->orderBy('MaNV', 'desc')->first();
+            $lastNhanVien = DB::table('NHAN_VIEN')->orderByRaw('LENGTH(MaNV) DESC')->orderBy('MaNV', 'desc')->first();
             $nextMaNV = 'NV001';
             if ($lastNhanVien) {
                 $lastIdNum = (int) str_replace('NV', '', $lastNhanVien->MaNV);
@@ -66,7 +66,7 @@ class EmployeeController extends Controller
             }
 
             // 2. Tự động sinh MaTK (VD: TK001 -> TK002)
-            $lastTaiKhoan = DB::table('tai_khoan')->orderByRaw('LENGTH(MaTK) DESC')->orderBy('MaTK', 'desc')->first();
+            $lastTaiKhoan = DB::table('TAI_KHOAN')->orderByRaw('LENGTH(MaTK) DESC')->orderBy('MaTK', 'desc')->first();
             $nextMaTK = 'TK001';
             if ($lastTaiKhoan) {
                 $lastIdNum = (int) str_replace('TK', '', $lastTaiKhoan->MaTK);
@@ -87,11 +87,11 @@ class EmployeeController extends Controller
             }
 
             // Tìm số thứ tự tiếp theo cho tên đăng nhập này
-            $countRole = DB::table('tai_khoan')->where('TenDangNhap', 'like', $rolePrefix . '%')->count();
+            $countRole = DB::table('TAI_KHOAN')->where('TenDangNhap', 'like', $rolePrefix . '%')->count();
             $nextTenDangNhap = $rolePrefix . str_pad($countRole + 1, 2, '0', STR_PAD_LEFT);
 
             // 4. Insert vào bảng nhan_vien
-            DB::table('nhan_vien')->insert([
+            DB::table('NHAN_VIEN')->insert([
                 'MaNV' => $nextMaNV,
                 'TenNV' => $request->TenNV,
                 'SDT' => $request->SDT,
@@ -101,7 +101,7 @@ class EmployeeController extends Controller
             ]);
 
             // 5. Insert vào bảng tai_khoan (Mật khẩu tự động: Staff@123)
-            DB::table('tai_khoan')->insert([
+            DB::table('TAI_KHOAN')->insert([
                 'MaTK' => $nextMaTK,
                 'TenDangNhap' => $nextTenDangNhap,
                 'MatKhau' => Hash::make('Staff@123'),
@@ -137,17 +137,17 @@ class EmployeeController extends Controller
         try {
             DB::beginTransaction();
             
-            $taiKhoan = DB::table('tai_khoan')->where('MaTK', $id)->first();
+            $taiKhoan = DB::table('TAI_KHOAN')->where('MaTK', $id)->first();
             
             if (!$taiKhoan) {
                 return response()->json(['success' => false, 'message' => 'Không tìm thấy tài khoản'], 404);
             }
 
             // Xóa tài khoản
-            DB::table('tai_khoan')->where('MaTK', $id)->delete();
+            DB::table('TAI_KHOAN')->where('MaTK', $id)->delete();
             
             // Tùy chọn: Xóa luôn nhân viên (nếu logic yêu cầu)
-            DB::table('nhan_vien')->where('MaNV', $taiKhoan->MaNV)->delete();
+            DB::table('NHAN_VIEN')->where('MaNV', $taiKhoan->MaNV)->delete();
 
             DB::commit();
 
