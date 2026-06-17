@@ -16,7 +16,7 @@ class AuthController extends Controller
 			'password' => 'required|string',
 		]);
 
-		$account = DB::table('tai_khoan')
+		$account = DB::table('TAI_KHOAN')
 			->where('TenDangNhap', $request->input('username'))
 			->where('TrangThai', 'Hoạt động')
 			->first();
@@ -28,11 +28,11 @@ class AuthController extends Controller
 			], 401);
 		}
 
-		DB::table('tai_khoan')
+		DB::table('TAI_KHOAN')
 			->where('MaTK', $account->MaTK)
 			->update(['LanDangNhapCuoi' => now()]);
 
-		$nhanVien = DB::table('nhan_vien')
+		$nhanVien = DB::table('NHAN_VIEN')
 			->where('MaNV', $account->MaNV)
 			->first();
 
