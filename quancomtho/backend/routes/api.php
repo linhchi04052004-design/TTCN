@@ -12,6 +12,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PaymentController;
 
+Route::get('/health', fn() => response()->json(['status' => 'ok']));
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
