@@ -9,7 +9,7 @@ class DonHang extends Model
 {
     use HasFactory;
 
-    protected $table = 'don_hang';
+    protected $table = 'DON_HANG';
     protected $primaryKey = 'MaDH';
     public $incrementing = false;
     protected $keyType = 'string';

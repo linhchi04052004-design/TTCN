@@ -9,7 +9,7 @@ class HoaDon extends Model
 {
     use HasFactory;
 
-    protected $table = 'hoa_don';
+    protected $table = 'HOA_DON';
     protected $primaryKey = 'MaHD';
     public $incrementing = false;
     protected $keyType = 'string';

@@ -9,7 +9,7 @@ class MonAn extends Model
 {
     use HasFactory;
 
-    protected $table = 'mon_an';
+    protected $table = 'MON_AN';
     protected $primaryKey = 'MaMonAn';
     public $incrementing = false;
     protected $keyType = 'string';

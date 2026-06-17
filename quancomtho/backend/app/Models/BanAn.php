@@ -9,7 +9,7 @@ class BanAn extends Model
 {
     use HasFactory;
 
-    protected $table = 'ban_an';
+    protected $table = 'BAN_AN';
     protected $primaryKey = 'MaBan';
     public $incrementing = false;
     protected $keyType = 'string';

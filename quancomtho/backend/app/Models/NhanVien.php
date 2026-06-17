@@ -9,7 +9,7 @@ class NhanVien extends Model
 {
     use HasFactory;
 
-    protected $table = 'nhan_vien';
+    protected $table = 'NHAN_VIEN';
     protected $primaryKey = 'MaNV';
     public $incrementing = false;
     protected $keyType = 'string';

@@ -9,7 +9,7 @@ class ChiTietDH extends Model
 {
     use HasFactory;
 
-    protected $table = 'chi_tiet_dh';
+    protected $table = 'CHI_TIET_DH';
     protected $primaryKey = 'MaCTDH';
     public $incrementing = false;
     protected $keyType = 'string';
