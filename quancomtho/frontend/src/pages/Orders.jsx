@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ShoppingBag, ChevronDown, CheckCircle, XCircle, Clock, Utensils, AlertCircle, X, Eye } from 'lucide-react';
@@ -16,17 +16,13 @@ export default function Orders() {
   const [orderToCancel, setOrderToCancel] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const showMessage = (type, text) => {
+  const showMessage = useCallback((type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-  };
+  }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
     try {
       const [tablesRes, ordersRes] = await Promise.all([
         fetch(buildApiUrl('/admin/tables')),
@@ -44,11 +40,22 @@ export default function Orders() {
       }
     } catch (error) {
       console.error('Lỗi lấy dữ liệu:', error);
-      showMessage('error', 'Không thể tải dữ liệu. Vui lòng thử lại sau.');
+      if (!silent) {
+        showMessage('error', 'Không thể tải dữ liệu. Vui lòng thử lại sau.');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [showMessage]);
+
+  useEffect(() => {
+    fetchData();
+    const refreshInterval = setInterval(() => {
+      fetchData({ silent: true });
+    }, 3000);
+
+    return () => clearInterval(refreshInterval);
+  }, [fetchData]);
 
   const handleCreateTakeaway = () => {
     navigate('/admin/orders/create');
@@ -97,7 +104,7 @@ export default function Orders() {
           // Refresh table modal orders
           handleViewTableOrders(tableModal.table);
         }
-        fetchData();
+        fetchData({ silent: true });
       } else {
         showMessage('error', result.message || 'Lỗi hủy đơn.');
       }

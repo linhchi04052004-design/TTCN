@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { QrCode, Users, Armchair, LayoutGrid, Clock, Printer, X, Link as LinkIcon, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { QRCodeSVG } from 'qrcode.react';
@@ -10,6 +10,12 @@ export default function Tables() {
   const [stats, setStats] = useState({ total: 0, empty: 0, occupied: 0 });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const editedCapacitiesRef = useRef({});
+
+  const showMessage = useCallback((type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+  }, []);
   
   // QR generation state
   // QR URL trỏ về IP thực của máy tính (cùng port với app đang chạy)
@@ -23,28 +29,41 @@ export default function Tables() {
   const [qrBaseUrl, setQrBaseUrl] = useState(getDefaultQrBase());
   const [selectedTableForQR, setSelectedTableForQR] = useState(null);
 
-  useEffect(() => {
-    fetchTables();
-  }, []);
-
-  const fetchTables = async () => {
-    setLoading(true);
+  const fetchTables = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
     try {
       const res = await fetch(buildApiUrl('/admin/tables'));
       const result = await res.json();
       if (result.success) {
-        setTables(result.data.tables);
+        setTables(result.data.tables.map(table => ({
+          ...table,
+          SucChua: Object.prototype.hasOwnProperty.call(editedCapacitiesRef.current, table.MaBan)
+            ? editedCapacitiesRef.current[table.MaBan]
+            : table.SucChua,
+        })));
         setStats(result.data.stats);
       }
     } catch (error) {
       console.error('Lỗi lấy danh sách bàn:', error);
-      showMessage('error', 'Không thể tải dữ liệu bàn. Vui lòng thử lại sau.');
+      if (!silent) {
+        showMessage('error', 'Không thể tải dữ liệu bàn. Vui lòng thử lại sau.');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  };
+  }, [showMessage]);
+
+  useEffect(() => {
+    fetchTables();
+    const refreshInterval = setInterval(() => {
+      fetchTables({ silent: true });
+    }, 3000);
+
+    return () => clearInterval(refreshInterval);
+  }, [fetchTables]);
 
   const handleCapacityChange = (maBan, value) => {
+    editedCapacitiesRef.current[maBan] = value;
     setTables(tables.map(table => 
       table.MaBan === maBan ? { ...table, SucChua: value } : table
     ));
@@ -63,8 +82,9 @@ export default function Tables() {
       const result = await res.json();
       
       if (result.success) {
+        delete editedCapacitiesRef.current[maBan];
         showMessage('success', `Cập nhật thành công sức chứa cho bàn ${maBan}`);
-        fetchTables();
+        fetchTables({ silent: true });
       } else {
         showMessage('error', result.message || 'Có lỗi xảy ra khi cập nhật.');
       }
@@ -72,11 +92,6 @@ export default function Tables() {
       console.error('Lỗi cập nhật sức chứa:', error);
       showMessage('error', 'Lỗi kết nối máy chủ. Vui lòng thử lại.');
     }
-  };
-
-  const showMessage = (type, text) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handlePrint = () => {

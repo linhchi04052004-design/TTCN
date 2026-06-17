@@ -182,11 +182,33 @@ class CustomerController extends Controller
         }
     }
     public function getOrderStatus($maDH)
-{
-    $order = DB::table('DON_HANG')->where('MaDH', $maDH)->select('TrangThai')->first();
-    if (!$order) {
-        return response()->json(['success' => false, 'status' => 'not_found']);
+    {
+        $order = DonHang::with(['chiTiet.monAn'])
+            ->where('MaDH', $maDH)
+            ->first();
+
+        if (!$order) {
+            return response()->json(['success' => false, 'status' => 'not_found']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $order->TrangThai,
+            'order' => [
+                'MaDH' => $order->MaDH,
+                'MaBan' => $order->MaBan,
+                'TenKhach' => $order->TenKhach,
+                'TrangThai' => $order->TrangThai,
+                'items' => $order->chiTiet->map(function ($item) {
+                    return [
+                        'MaMonAn' => $item->MaMonAn,
+                        'TenMonAn' => optional($item->monAn)->TenMonAn ?? $item->MaMonAn,
+                        'SoLuong' => $item->SoLuong,
+                        'DonGia' => $item->DonGiaTaiThoiDiemBan,
+                        'GhiChu' => $item->GhiChu,
+                    ];
+                })->values(),
+            ],
+        ]);
     }
-    return response()->json(['success' => true, 'status' => $order->TrangThai]);
-}
 }

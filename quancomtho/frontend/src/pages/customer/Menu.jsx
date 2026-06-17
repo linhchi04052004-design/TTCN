@@ -6,6 +6,17 @@ import DishDetail from '../../components/customer/DishDetail';
 import Cart from '../../components/customer/Cart';
 import { buildStorageUrl } from '../../config';
 
+const ACTIVE_ORDER_ID_KEY = 'active_order_id';
+const ACTIVE_ORDER_DETAILS_KEY = 'active_order_details';
+
+const readActiveOrderDetails = () => {
+  try {
+    return JSON.parse(localStorage.getItem(ACTIVE_ORDER_DETAILS_KEY) || 'null');
+  } catch {
+    return null;
+  }
+};
+
 const Menu = () => {
   const navigate = useNavigate();
   const { maBan } = useParams();
@@ -20,6 +31,11 @@ const Menu = () => {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [activeOrder, setActiveOrder] = useState(() => {
+    const orderId = localStorage.getItem(ACTIVE_ORDER_ID_KEY);
+    const details = readActiveOrderDetails();
+    return orderId ? { MaDH: orderId, ...details } : null;
+  });
 
   const categoryScrollRef = useRef(null);
 
@@ -38,6 +54,17 @@ const Menu = () => {
       }
     };
     loadData();
+  }, []);
+
+  useEffect(() => {
+    const refreshActiveOrder = () => {
+      const orderId = localStorage.getItem(ACTIVE_ORDER_ID_KEY);
+      const details = readActiveOrderDetails();
+      setActiveOrder(orderId ? { MaDH: orderId, ...details } : null);
+    };
+
+    window.addEventListener('focus', refreshActiveOrder);
+    return () => window.removeEventListener('focus', refreshActiveOrder);
   }, []);
 
   // Lọc món theo danh mục
@@ -151,6 +178,16 @@ const Menu = () => {
           )}
         </button>
       </div>
+
+      {activeOrder?.MaDH && (
+        <button
+          onClick={() => navigate(maBan ? `/order/${maBan}/checkout` : '/order/checkout')}
+          className="mx-4 mt-4 rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-left text-sm text-green-700 shadow-sm"
+        >
+          <span className="font-bold">Đơn {activeOrder.MaDH} đã xác nhận.</span>
+          <span className="block text-xs text-green-600">Nhân viên đang chuẩn bị món cho quý khách.</span>
+        </button>
+      )}
 
       {/* Category Tabs */}
       <div className="bg-white border-b border-gray-100 sticky top-[57px] z-10">
