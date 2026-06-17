@@ -13,6 +13,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PaymentController;
 
 Route::get('/health', fn() => response()->json(['status' => 'ok']));
+Route::post('/auth/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
 /*
 |--------------------------------------------------------------------------
