@@ -48,3 +48,7 @@ export const placeOrder = async (orderData) => {
   if (!res.ok) throw new Error(data.message || 'Có lỗi xảy ra khi đặt hàng');
   return data;
 };
+export const getOrderStatus = async (maDH) => {
+  const res = await fetch(`${BASE_URL}/order-status/${maDH}`);
+  return res.json();
+};

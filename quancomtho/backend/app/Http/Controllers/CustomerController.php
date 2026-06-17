@@ -181,4 +181,12 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    public function getOrderStatus($maDH)
+{
+    $order = DB::table('DON_HANG')->where('MaDH', $maDH)->select('TrangThai')->first();
+    if (!$order) {
+        return response()->json(['success' => false, 'status' => 'not_found']);
+    }
+    return response()->json(['success' => true, 'status' => $order->TrangThai]);
+}
 }

@@ -78,4 +78,5 @@ Route::prefix('customer')->group(function () {
     Route::get('/dishes', [CustomerController::class, 'getDishes']);
     Route::get('/table/{maBan}', [CustomerController::class, 'getTable']);
     Route::post('/order', [CustomerController::class, 'placeOrder']);
+    Route::get('/order-status/{maDH}', [CustomerController::class, 'getOrderStatus']);
 });
