@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -58,8 +60,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Modify this path if your backend is hosted differently
-      const response = await fetch(`http://${window.location.hostname}/quancomtho/quancomtho/backend/api/login.php`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
